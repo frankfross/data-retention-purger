@@ -1,0 +1,29 @@
+# Retention policies for the demo dataset.
+#
+# Each policy targets one table and removes data older than the retention
+# window. 'on_expire' is 'delete' (drop the rows) or 'anonymize' (keep the
+# row but scrub the subject's PII). 'anonymize' requires a customer_id
+# column so the purger can find whose data to scrub.
+#
+# Tune these for your own compliance needs. Typical real-world shapes:
+# clickstream/event data is kept shortest, financial/transaction data
+# longer for tax and audit reasons.
+
+policies:
+  - name: clickstream-90d
+    table: clickstream
+    retention_days: 90
+    date_column: created_at
+    on_expire: delete
+
+  - name: orders-365d
+    table: orders
+    retention_days: 365
+    date_column: created_at
+    on_expire: delete
+
+  - name: customers-730d
+    table: customers
+    retention_days: 730
+    date_column: created_at
+    on_expire: anonymize   # keep account skeleton, scrub name/email
